@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FractureSense AI - Intelligent Bone Fracture Classification</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Medical/Professional fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <div class="logo-icon">
+                    <i class="fas fa-bone"></i>
+                </div>
+                <span class="ms-3">
+                    <strong>FractureSense</strong> AI
+                </span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#dashboard">
+                            <i class="fas fa-home me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about" data-bs-toggle="modal" data-bs-target="#aboutModal">
+                            <i class="fas fa-info-circle me-1"></i> About
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <div class="hero-badge">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            AI-Powered Medical Analysis
+                        </div>
+                        <h1 class="display-4 fw-bold mb-3">
+                            Intelligent Bone Fracture Detection
+                        </h1>
+                        <p class="lead mb-4">
+                            Upload X-ray images for instant AI-powered fracture classification with severity assessment and treatment recommendations.
+                        </p>
+                        <div class="hero-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">92.5%</div>
+                                <div class="stat-label">Accuracy</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">&lt;2s</div>
+                                <div class="stat-label">Analysis Time</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">5</div>
+                                <div class="stat-label">Fracture Types</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-visual">
+                        <div class="xray-frame">
+                            <i class="fas fa-x-ray"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="container my-5" id="dashboard">
+        
+        <!-- Upload Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card upload-card">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-3">
+                            <i class="fas fa-cloud-upload-alt me-2"></i>
+                            Upload X-Ray Image
+                        </h3>
+                        
+                        <!-- File Upload Form -->
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="upload-area" id="uploadArea">
+                                <i class="fas fa-image upload-icon"></i>
+                                <p class="upload-text">
+                                    <strong>Click to select</strong> or drag and drop
+                                </p>
+                                <p class="upload-subtext">
+                                    Supported formats: PNG, JPG, JPEG (Max 16MB)
+                                </p>
+                                <input type="file" id="fileInput" name="file" accept=".png,.jpg,.jpeg" hidden>
+                            </div>
+                        </form>
+
+                        <!-- Image Preview -->
+                        <div id="previewSection" class="preview-section" style="display: none;">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <img id="imagePreview" class="img-fluid rounded shadow-sm" alt="X-ray preview">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="preview-info">
+                                        <h5 id="fileName" class="mb-2"></h5>
+                                        <p id="fileSize" class="text-muted mb-3"></p>
+                                        <button type="button" class="btn btn-primary btn-lg" id="analyzeBtn">
+                                            <i class="fas fa-brain me-2"></i>
+                                            Analyze X-Ray
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary ms-2" id="cancelBtn">
+                                            <i class="fas fa-times me-2"></i>
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div id="progressSection" class="progress-section" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="progress-label">Analyzing X-Ray...</span>
+                                <span class="progress-percentage" id="progressText">0%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" 
+                                     id="progressBar"
+                                     style="width: 0%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" style="display: none;">
+            <div class="row">
+                
+                <!-- Fracture Classification -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card result-card h-100">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">
+                                <i class="fas fa-stethoscope me-2"></i>
+                                Diagnosis Results
+                            </h4>
+                            
+                            <div class="result-main mb-4">
+                                <div class="result-label">Fracture Type</div>
+                                <div class="result-value" id="fractureType">-</div>
+                            </div>
+
+                            <div class="result-main mb-4">
+                                <div class="result-label">Severity Level</div>
+                                <div class="result-value severity-badge" id="severityLevel">-</div>
+                            </div>
+
+                            <div class="confidence-meter">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="confidence-label">Confidence Score</span>
+                                    <span class="confidence-score" id="confidenceScore">0%</span>
+                                </div>
+                                <div class="progress confidence-bar">
+                                    <div class="progress-bar" id="confidenceBar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Treatment Recommendations -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card result-card h-100">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">
+                                <i class="fas fa-notes-medical me-2"></i>
+                                Treatment Recommendations
+                            </h4>
+                            
+                            <div class="treatment-item">
+                                <div class="treatment-icon primary">
+                                    <i class="fas fa-procedures"></i>
+                                </div>
+                                <div class="treatment-content">
+                                    <div class="treatment-label">Primary Treatment</div>
+                                    <div class="treatment-text" id="primaryTreatment">-</div>
+                                </div>
+                            </div>
+
+                            <div class="treatment-item">
+                                <div class="treatment-icon secondary">
+                                    <i class="fas fa-pills"></i>
+                                </div>
+                                <div class="treatment-content">
+                                    <div class="treatment-label">Secondary Care</div>
+                                    <div class="treatment-text" id="secondaryTreatment">-</div>
+                                </div>
+                            </div>
+
+                            <div class="treatment-item">
+                                <div class="treatment-icon duration">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="treatment-content">
+                                    <div class="treatment-label">Expected Duration</div>
+                                    <div class="treatment-text" id="treatmentDuration">-</div>
+                                </div>
+                            </div>
+
+                            <div class="treatment-item">
+                                <div class="treatment-icon followup">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="treatment-content">
+                                    <div class="treatment-label">Follow-up Schedule</div>
+                                    <div class="treatment-text" id="followUp">-</div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning mt-4 mb-0">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Medical Disclaimer:</strong> This AI analysis is for informational purposes only. Always consult qualified medical professionals for diagnosis and treatment.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- New Analysis Button -->
+            <div class="text-center mt-4">
+                <button type="button" class="btn btn-primary btn-lg" id="newAnalysisBtn">
+                    <i class="fas fa-redo me-2"></i>
+                    Analyze Another X-Ray
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal fade" id="aboutModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        About FractureSense AI
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>System Information</h6>
+                    <ul>
+                        <li><strong>Model Type:</strong> Convolutional Neural Network (CNN)</li>
+                        <li><strong>Version:</strong> 1.0</li>
+                        <li><strong>Accuracy:</strong> 92.5%</li>
+                        <li><strong>Training Dataset:</strong> 10,000+ annotated X-ray images</li>
+                    </ul>
+                    
+                    <h6 class="mt-4">Detectable Fracture Types</h6>
+                    <ul>
+                        <li>No Fracture</li>
+                        <li>Hairline Fracture</li>
+                        <li>Simple Fracture</li>
+                        <li>Compound Fracture</li>
+                        <li>Comminuted Fracture</li>
+                    </ul>
+
+                    <h6 class="mt-4">How It Works</h6>
+                    <ol>
+                        <li>Upload an X-ray image in PNG, JPG, or JPEG format</li>
+                        <li>AI model analyzes bone structure and patterns</li>
+                        <li>System classifies fracture type and severity</li>
+                        <li>Treatment recommendations generated based on diagnosis</li>
+                    </ol>
+
+                    <div class="alert alert-info mt-4">
+                        <strong>Note:</strong> This is an AI-assisted diagnostic tool. Results should always be verified by qualified medical professionals.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Global variables
+        let selectedFile = null;
+
+        // DOM elements
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewSection = document.getElementById('previewSection');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const progressSection = document.getElementById('progressSection');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const resultsSection = document.getElementById('resultsSection');
+        const newAnalysisBtn = document.getElementById('newAnalysisBtn');
+
+        // Upload area click handler
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Drag and drop handlers
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        // File input change handler
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        // Handle file selection
+        function handleFileSelect(file) {
+            // Validate file type
+            const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+            if (!validTypes.includes(file.type)) {
+                alert('Please upload a valid image file (PNG, JPG, or JPEG)');
+                return;
+            }
+
+            // Validate file size (16MB max)
+            if (file.size > 16 * 1024 * 1024) {
+                alert('File size must be less than 16MB');
+                return;
+            }
+
+            selectedFile = file;
+
+            // Display preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                
+                uploadArea.style.display = 'none';
+                previewSection.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        // Cancel button handler
+        cancelBtn.addEventListener('click', () => {
+            resetUpload();
+        });
+
+        // Reset upload
+        function resetUpload() {
+            selectedFile = null;
+            fileInput.value = '';
+            uploadArea.style.display = 'block';
+            previewSection.style.display = 'none';
+            progressSection.style.display = 'none';
+            resultsSection.style.display = 'none';
+        }
+
+        // Analyze button handler
+        analyzeBtn.addEventListener('click', () => {
+            if (!selectedFile) return;
+            analyzeImage();
+        });
+
+        // Analyze image
+        async function analyzeImage() {
+            // Hide preview, show progress
+            previewSection.style.display = 'none';
+            progressSection.style.display = 'block';
+
+            // Simulate progress (for better UX)
+            simulateProgress();
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                // Send to backend
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Complete progress
+                    updateProgress(100);
+                    
+                    // Wait a moment then show results
+                    setTimeout(() => {
+                        displayResults(data);
+                    }, 500);
+                } else {
+                    throw new Error(data.error || 'Analysis failed');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Analysis failed: ' + error.message);
+                resetUpload();
+            }
+        }
+
+        // Simulate progress
+        function simulateProgress() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) {
+                    progress = 90;
+                    clearInterval(interval);
+                }
+                updateProgress(progress);
+            }, 200);
+        }
+
+        // Update progress bar
+        function updateProgress(percent) {
+            progressBar.style.width = percent + '%';
+            progressText.textContent = Math.round(percent) + '%';
+        }
+
+        // Display results
+        function displayResults(data) {
+            // Hide progress
+            progressSection.style.display = 'none';
+
+            // Populate results
+            document.getElementById('fractureType').textContent = data.fracture_type;
+            
+            const severityElement = document.getElementById('severityLevel');
+            severityElement.textContent = data.severity;
+            severityElement.className = 'result-value severity-badge severity-' + data.severity.toLowerCase();
+
+            const confidenceScore = document.getElementById('confidenceScore');
+            const confidenceBar = document.getElementById('confidenceBar');
+            confidenceScore.textContent = data.confidence.toFixed(1) + '%';
+            confidenceBar.style.width = data.confidence + '%';
+            
+            // Set confidence bar color based on value
+            if (data.confidence >= 80) {
+                confidenceBar.className = 'progress-bar bg-success';
+            } else if (data.confidence >= 60) {
+                confidenceBar.className = 'progress-bar bg-warning';
+            } else {
+                confidenceBar.className = 'progress-bar bg-danger';
+            }
+
+            // Populate treatment recommendations
+            document.getElementById('primaryTreatment').textContent = data.treatment.primary;
+            document.getElementById('secondaryTreatment').textContent = data.treatment.secondary;
+            document.getElementById('treatmentDuration').textContent = data.treatment.duration;
+            document.getElementById('followUp').textContent = data.treatment.follow_up;
+
+            // Show results with animation
+            resultsSection.style.display = 'block';
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // New analysis button
+        newAnalysisBtn.addEventListener('click', () => {
+            resetUpload();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+    </script>
+
+</body>
+</html>

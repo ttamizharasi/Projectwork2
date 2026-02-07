@@ -145,7 +145,7 @@ This system serves as a **clinical decision support tool** for healthcare profes
 
 ### High-Level Architecture
 
-![System Architecture](docs/images/architecture-diagram.png)
+![System Architecture](https://github.com/ttamizharasi/Projectwork2/blob/main/architecture%20diagram.png)
 
 *Three-tier architecture: Frontend (Bootstrap UI) → Backend (Flask API) → AI Engine (TensorFlow CNN)*
 

@@ -1,21 +1,20 @@
 from flask import Flask, render_template, request, jsonify
 import os
 from werkzeug.utils import secure_filename
-from utils.predict import FracturePredictor
+
+# Lazy import predictor
+predictor = None
 
 # ---------------- Flask Setup ----------------
 app = Flask(__name__)
 
-# Render/Docker writable temp directory
+# Render writable directory
 app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-# -------- Load AI Predictor --------
-predictor = FracturePredictor()
 
 
 # ---------------- File Validation ----------------
@@ -95,7 +94,16 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
 
+    global predictor
+
     try:
+
+        # -------- Lazy Load Predictor --------
+        if predictor is None:
+            from utils.predict import FracturePredictor
+            predictor = FracturePredictor()
+
+        # -------- Validate File --------
         if 'file' not in request.files:
             return jsonify({'error': 'No file uploaded'}), 400
 
@@ -135,20 +143,29 @@ def predict():
 @app.route('/about')
 def about():
 
+    global predictor
+
+    classes = []
+    if predictor is not None:
+        classes = predictor.get_classes()
+
     return jsonify({
         'model_name': 'FractureSense AI Dual Model',
         'model_type': 'MobileNetV2 Transfer Learning',
-        'classes': predictor.get_classes(),
+        'classes': classes,
         'description': 'Multi-stage fracture detection and classification AI'
     })
+
+
+# ---------------- Health Check ----------------
+@app.route('/health')
+def health():
+    return jsonify({"status": "healthy"})
 
 
 # ---------------- Run Server ----------------
 if __name__ == '__main__':
 
-    print("\n🏥 FractureSense AI Started")
-
-    # Render provides PORT dynamically
     port = int(os.environ.get("PORT", 10000))
 
     app.run(host="0.0.0.0", port=port)

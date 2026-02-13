@@ -6,7 +6,8 @@ from utils.predict import FracturePredictor
 # ---------------- Flask Setup ----------------
 app = Flask(__name__)
 
-app.config['UPLOAD_FOLDER'] = 'uploads'
+# Render/Docker writable temp directory
+app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -146,6 +147,8 @@ def about():
 if __name__ == '__main__':
 
     print("\n🏥 FractureSense AI Started")
-    print("🌐 http://127.0.0.1:5000\n")
 
-    app.run(debug=True)
+    # Render provides PORT dynamically
+    port = int(os.environ.get("PORT", 10000))
+
+    app.run(host="0.0.0.0", port=port)

@@ -1,0 +1,29 @@
+======================================================================
+FRACTURESENSE AI - CLASSIFICATION REPORT
+(Generated from Existing Model)
+======================================================================
+
+Model: ../deployment/model/fracture_classification_model.h5
+Date: 2026-02-20 12:20:06
+Test Samples: 24
+Number of Classes: 6
+Test Accuracy: 87.50%
+
+======================================================================
+CLASSIFICATION METRICS
+======================================================================
+
+                   precision    recall  f1-score   support
+
+   elbow fracture     1.0000    1.0000    1.0000         5
+ fingers fracture     1.0000    0.6667    0.8000         3
+ forearm fracture     0.8571    1.0000    0.9231         6
+ humerus fracture     1.0000    0.8333    0.9091         6
+shoulder fracture     1.0000    0.5000    0.6667         2
+   wrist fracture     0.5000    1.0000    0.6667         2
+
+         accuracy                         0.8750        24
+        macro avg     0.8929    0.8333    0.8276        24
+     weighted avg     0.9226    0.8750    0.8775        24
+
+======================================================================

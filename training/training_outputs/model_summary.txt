@@ -1,0 +1,21 @@
+======================================================================
+FRACTURESENSE AI - MODEL PERFORMANCE SUMMARY
+(Generated from Existing Trained Model)
+======================================================================
+
+Model Path: ../deployment/model/fracture_classification_model.h5
+Generated: 2026-02-20 12:20:08
+Test Samples: 24
+Number of Classes: 6
+
+PERFORMANCE METRICS:
+----------------------------------------------------------------------
+Test Accuracy                           : 87.50%
+Mean Confidence                         : 0.8750863671302795
+Median Confidence                       : 0.9369440078735352
+High Confidence Predictions (>90%)      : 62.50%
+Low Confidence Predictions (<60%)       : 8.33%
+
+======================================================================
+GENERATED OUTPUT FILES:
+======================================================================
